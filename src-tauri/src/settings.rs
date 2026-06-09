@@ -38,8 +38,8 @@ impl Default for AppSettings {
             floating_enabled: false,
             floating_x: 800.0,
             floating_y: 100.0,
-            floating_width: 340.0,
-            floating_height: 420.0,
+            floating_width: 280.0,
+            floating_height: 320.0,
         }
     }
 }

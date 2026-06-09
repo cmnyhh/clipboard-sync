@@ -4,6 +4,7 @@ use futures_util::{SinkExt, StreamExt};
 use local_ip_address::local_ip;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
+use tauri::Emitter;
 use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::{broadcast, mpsc, Mutex};
 use tokio_tungstenite::{accept_async, connect_async, tungstenite::Message};
@@ -276,6 +277,7 @@ async fn handle_connection(
 pub async fn connect_to_server(
     address: &str,
     clipboard_manager: Arc<Mutex<crate::clipboard::ClipboardManager>>,
+    app_handle: Option<tauri::AppHandle>,
 ) -> Result<Client> {
     let url = format!("ws://{}", address);
     let (ws_stream, _) = connect_async(&url).await?;
@@ -306,13 +308,15 @@ pub async fn connect_to_server(
                                 }
                             }
                             "image" | "file" => {
-                                // 图片和文件不自动写入剪贴板，交给前端处理队列
-                                // 这里只打印日志
                                 println!("收到 {} 类型数据，大小: {} bytes",
                                     sync_msg.data.data_type,
                                     sync_msg.data.content.len());
                             }
                             _ => {}
+                        }
+                        // 通知前端有新数据到达
+                        if let Some(ref app) = app_handle {
+                            let _ = app.emit("sync-received", &sync_msg);
                         }
                     }
                 }

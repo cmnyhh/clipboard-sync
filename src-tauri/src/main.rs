@@ -64,6 +64,7 @@ async fn write_clipboard_text(
 #[tauri::command]
 async fn start_server(
     state: State<'_, AppState>,
+    app: tauri::AppHandle,
     port: u16,
 ) -> Result<String, String> {
     let mut server = state.server.lock().await;
@@ -72,7 +73,7 @@ async fn start_server(
         .await
         .map_err(|e| e.to_string())?;
     let address = s.address.clone();
-    let self_client = network::connect_to_server(&address, state.clipboard_manager.clone())
+    let self_client = network::connect_to_server(&address, state.clipboard_manager.clone(), Some(app))
         .await
         .map_err(|e| e.to_string())?;
     *server = Some(s);
@@ -84,10 +85,11 @@ async fn start_server(
 #[tauri::command]
 async fn connect_to_server(
     state: State<'_, AppState>,
+    app: tauri::AppHandle,
     address: String,
 ) -> Result<(), String> {
     let mut client = state.client.lock().await;
-    let c = network::connect_to_server(&address, state.clipboard_manager.clone())
+    let c = network::connect_to_server(&address, state.clipboard_manager.clone(), Some(app))
         .await
         .map_err(|e| e.to_string())?;
     *client = Some(c);
@@ -269,7 +271,7 @@ fn create_floating_window(app: &tauri::AppHandle) -> Result<(), String> {
 
     let mut builder = WebviewWindowBuilder::new(app, "floating", WebviewUrl::App("/floating".into()))
         .title("")
-        .inner_size(s.floating_width.max(320.0), s.floating_height.max(380.0))
+        .inner_size(s.floating_width.max(260.0), s.floating_height.max(300.0))
         .always_on_top(true)
         .decorations(false)
         .resizable(false)

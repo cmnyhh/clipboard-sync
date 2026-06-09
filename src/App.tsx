@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { listen } from "@tauri-apps/api/event";
 import { useAppStore } from "./store/appStore";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
@@ -11,7 +12,7 @@ function App() {
   const [activeTab, setActiveTab] = useState<"clipboard" | "settings">(
     "clipboard"
   );
-  const { setLocalIp, setDeviceName, loadSettings } = useAppStore();
+  const { setLocalIp, setDeviceName, loadSettings, addPendingSyncItem, addClipboardItem } = useAppStore();
 
   // 检测当前路径：/floating 走悬浮窗，否则走主窗口
   const isFloating = window.location.pathname === "/floating";
@@ -29,6 +30,36 @@ function App() {
       }
     };
     initApp();
+
+    // 监听来自其他客户端的同步数据
+    const unlisten = listen<{
+      device_id: string;
+      device_name: string;
+      data: { type: string; content: string; fileName?: string; fileSize?: number };
+    }>("sync-received", (event) => {
+      const { data, device_name } = event.payload;
+      const item = {
+        id: Date.now().toString() + Math.random().toString(36).slice(2, 6),
+        type: data.type as "text" | "image" | "file",
+        content: data.content,
+        fileName: data.fileName,
+        fileSize: data.fileSize,
+        timestamp: Date.now(),
+        sourceDevice: device_name || "未知设备",
+        synced: true,
+      };
+
+      // 文本自动加入历史，图片和文件加入待接收队列
+      if (data.type === "text") {
+        addClipboardItem(item);
+      } else {
+        addPendingSyncItem(item);
+      }
+    });
+
+    return () => {
+      unlisten.then((fn) => fn());
+    };
   }, []);
 
   // 悬浮窗模式
