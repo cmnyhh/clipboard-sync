@@ -88,7 +88,9 @@ export default function FloatingSync() {
     }
   };
 
-  const handleDrag = async () => {
+  const handleDrag = async (e: React.MouseEvent) => {
+    // 不拦截按钮点击
+    if ((e.target as HTMLElement).closest("button")) return;
     try {
       await getCurrentWindow().startDragging();
     } catch (err) {
@@ -133,7 +135,7 @@ export default function FloatingSync() {
           </div>
           {pendingSyncItems.length > 0 && (
             <button
-              onClick={(e) => { e.stopPropagation(); clearPendingSyncItems(); }}
+              onClick={() => clearPendingSyncItems()}
               className="text-[10px] font-medium px-2 py-1 rounded-md transition-colors"
               style={{ color: "#8e8e93" }}
               onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,59,48,0.06)"; e.currentTarget.style.color = "#ff3b30"; }}

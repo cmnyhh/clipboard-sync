@@ -31,6 +31,9 @@ function App() {
     };
     initApp();
 
+    // 悬浮窗模式下不注册事件监听（FloatingSync 自己处理）
+    if (window.location.pathname === "/floating") return;
+
     // 监听来自其他客户端的同步数据
     const unlisten = listen<{
       device_id: string;
