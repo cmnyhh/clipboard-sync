@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { useAppStore } from "../store/appStore";
-import { FiWifi, FiMonitor, FiCopy, FiZap, FiLink, FiSend } from "react-icons/fi";
+import { FiWifi, FiMonitor, FiCopy, FiZap, FiLink } from "react-icons/fi";
 
 export default function Header() {
   const { isConnected, localIp, deviceName, setConnected } = useAppStore();
@@ -66,19 +66,19 @@ export default function Header() {
       {/* 第一行：Logo + 设备信息 */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="relative flex items-center justify-center w-9 h-9 rounded-[11px]"
+          <div className="relative flex items-center justify-center w-9 h-9 rounded-[11px] overflow-hidden"
             style={{
-              background: "linear-gradient(135deg, rgba(245,166,35,0.15), rgba(232,115,26,0.1))",
-              border: "0.5px solid rgba(245,166,35,0.2)",
+              background: "linear-gradient(135deg, rgba(0,122,255,0.12), rgba(88,86,214,0.08))",
+              border: "0.5px solid rgba(0,122,255,0.15)",
               boxShadow: "inset 0 0.5px 0 rgba(255,255,255,0.5)",
             }}>
-            <FiSend className="w-[18px] h-[18px]" style={{ color: "#F5A623" }} />
+            <img src="/app-icon.png" alt="笺流" className="w-6 h-6 object-contain" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
             <div className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full border-[1.5px] border-white/80 animate-pulse-slow"
               style={{ background: "#30d158", boxShadow: "0 0 5px rgba(48,209,88,0.5)" }} />
           </div>
           <div>
             <h1 className="text-[15px] font-bold tracking-tight leading-tight" style={{ color: "#1d1d1f" }}>
-              笺<span style={{ color: "#F5A623" }}>流</span>
+              笺<span style={{ color: "#007aff" }}>流</span>
             </h1>
             <p className="text-[9px] font-medium tracking-wide" style={{ color: "#8e8e93" }}>
               局域网剪贴板流转
