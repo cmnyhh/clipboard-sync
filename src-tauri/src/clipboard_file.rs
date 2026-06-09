@@ -50,52 +50,88 @@ mod linux {
     }
 
     fn try_xclip(path: &Path) -> Result<(), String> {
-        // xclip 支持写入 text/uri-list 和 x-special/gnome-copied-files
+        use std::io::Write;
+
         let uri = format!("file://{}", path.display());
 
-        // 先写 gnome-copied-files（GNOME/Nautilus 识别）
+        // 写入 gnome-copied-files（GNOME/Nautilus/Thunar 识别）
         let gnome_data = format!("copy\n{}", uri);
-        let status = Command::new("xclip")
+        let mut child = Command::new("xclip")
             .args(["-selection", "clipboard", "-t", "x-special/gnome-copied-files"])
-            .arg(&gnome_data)
-            .status();
+            .stdin(std::process::Stdio::piped())
+            .stdout(std::process::Stdio::null())
+            .stderr(std::process::Stdio::null())
+            .spawn()
+            .map_err(|e| format!("启动 xclip 失败: {}", e))?;
 
-        match status {
-            Ok(s) if s.success() => {
-                // 同时写入 text/uri-list（Thunar/Dolphin 等识别）
-                let _ = Command::new("xclip")
-                    .args(["-selection", "clipboard", "-t", "text/uri-list"])
-                    .arg(&uri)
-                    .status();
-                Ok(())
+        if let Some(mut stdin) = child.stdin.take() {
+            let _ = stdin.write_all(gnome_data.as_bytes());
+        }
+        let status = child.wait().map_err(|e| format!("xclip 等待失败: {}", e))?;
+
+        if status.success() {
+            // 同时写入 text/uri-list（Dolphin 等识别）
+            let mut child2 = Command::new("xclip")
+                .args(["-selection", "clipboard", "-t", "text/uri-list"])
+                .stdin(std::process::Stdio::piped())
+                .stdout(std::process::Stdio::null())
+                .stderr(std::process::Stdio::null())
+                .spawn();
+            if let Ok(mut c) = child2 {
+                if let Some(mut stdin) = c.stdin.take() {
+                    let _ = stdin.write_all(uri.as_bytes());
+                }
+                let _ = c.wait();
             }
-            _ => Err("xclip 执行失败".to_string()),
+            Ok(())
+        } else {
+            Err("xclip 执行失败".to_string())
         }
     }
 
     fn try_xsel(path: &Path) -> Result<(), String> {
-        let uri = format!("file://{}", path.display());
-        let status = Command::new("xsel")
-            .args(["--clipboard", "--input"])
-            .arg(&uri)
-            .status();
+        use std::io::Write;
 
-        match status {
-            Ok(s) if s.success() => Ok(()),
-            _ => Err("xsel 执行失败".to_string()),
+        let uri = format!("file://{}", path.display());
+        let mut child = Command::new("xsel")
+            .args(["--clipboard", "--input"])
+            .stdin(std::process::Stdio::piped())
+            .stdout(std::process::Stdio::null())
+            .stderr(std::process::Stdio::null())
+            .spawn()
+            .map_err(|e| format!("启动 xsel 失败: {}", e))?;
+
+        if let Some(mut stdin) = child.stdin.take() {
+            let _ = stdin.write_all(uri.as_bytes());
+        }
+        let status = child.wait().map_err(|e| format!("xsel 等待失败: {}", e))?;
+
+        match status.success() {
+            true => Ok(()),
+            false => Err("xsel 执行失败".to_string()),
         }
     }
 
     fn try_wl_copy(path: &Path) -> Result<(), String> {
-        let uri = format!("file://{}", path.display());
-        let status = Command::new("wl-copy")
-            .args(["--type", "text/uri-list"])
-            .arg(&uri)
-            .status();
+        use std::io::Write;
 
-        match status {
-            Ok(s) if s.success() => Ok(()),
-            _ => Err("wl-copy 执行失败".to_string()),
+        let uri = format!("file://{}", path.display());
+        let mut child = Command::new("wl-copy")
+            .args(["--type", "text/uri-list"])
+            .stdin(std::process::Stdio::piped())
+            .stdout(std::process::Stdio::null())
+            .stderr(std::process::Stdio::null())
+            .spawn()
+            .map_err(|e| format!("启动 wl-copy 失败: {}", e))?;
+
+        if let Some(mut stdin) = child.stdin.take() {
+            let _ = stdin.write_all(uri.as_bytes());
+        }
+        let status = child.wait().map_err(|e| format!("wl-copy 等待失败: {}", e))?;
+
+        match status.success() {
+            true => Ok(()),
+            false => Err("wl-copy 执行失败".to_string()),
         }
     }
 }

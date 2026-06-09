@@ -27,6 +27,8 @@ export default function ClipboardPanel() {
     clearPendingSyncItems,
     networkContent,
     setNetworkContent,
+    skipSyncContent,
+    setSkipSyncContent,
   } = useAppStore();
 
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -53,6 +55,11 @@ export default function ClipboardPanel() {
           // 如果内容来自网络（防循环），跳过同步
           if (networkContent && content.content === networkContent) {
             setNetworkContent(null);
+            return;
+          }
+          // 如果是程序写入的内容（如文件URI），跳过同步
+          if (skipSyncContent && content.content === skipSyncContent) {
+            setSkipSyncContent(null);
             return;
           }
 
@@ -139,6 +146,8 @@ export default function ClipboardPanel() {
   const handleSaveAndCopy = async (fileName: string, content: string) => {
     try {
       const path = await invoke<string>("save_and_copy_file", { fileName, base64Content: content });
+      // 标记文件URI，防止轮询把它当文本同步出去
+      setSkipSyncContent(`file://${path}`);
       console.log("文件已保存并复制到剪贴板:", path);
     } catch (err) {
       console.error("保存并复制失败:", err);
@@ -150,6 +159,8 @@ export default function ClipboardPanel() {
     try {
       if (item.type === "text") {
         await invoke("write_clipboard_text", { text: item.content });
+        // 标记文本内容，防止轮询同步回来源设备
+        setSkipSyncContent(item.content);
       }
       addClipboardItem({ ...item, synced: true });
       removePendingSyncItem(item.id);

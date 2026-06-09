@@ -56,6 +56,9 @@ interface AppState {
   // 防止同步循环：标记来自网络的内容
   networkContent: string | null;
   setNetworkContent: (content: string | null) => void;
+  // 标记程序写入的内容（不触发同步）
+  skipSyncContent: string | null;
+  setSkipSyncContent: (content: string | null) => void;
 
   // Actions
   setConnected: (connected: boolean) => void;
@@ -105,6 +108,8 @@ export const useAppStore = create<AppState>((set) => ({
 
   networkContent: null,
   setNetworkContent: (content) => set({ networkContent: content }),
+  skipSyncContent: null,
+  setSkipSyncContent: (content) => set({ skipSyncContent: content }),
 
   setConnected: (connected) => set({ isConnected: connected }),
   setServerAddress: (address) => set({ serverAddress: address }),

@@ -19,7 +19,7 @@ dayjs.extend(relativeTime);
 dayjs.locale("zh-cn");
 
 export default function FloatingSync() {
-  const { pendingSyncItems, removePendingSyncItem, clearPendingSyncItems, addPendingSyncItem, networkContent, setNetworkContent } =
+  const { pendingSyncItems, removePendingSyncItem, clearPendingSyncItems, addPendingSyncItem, networkContent, setNetworkContent, setSkipSyncContent } =
     useAppStore();
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
@@ -78,14 +78,14 @@ export default function FloatingSync() {
   const handleCopy = async (item: typeof pendingSyncItems[0]) => {
     try {
       if (item.type === "file" || item.type === "image") {
-        // 文件/图片：保存到本地 + 写入文件引用剪贴板
-        await invoke("save_and_copy_file", {
+        const path = await invoke<string>("save_and_copy_file", {
           fileName: item.fileName || (item.type === "image" ? "image.png" : "file"),
           base64Content: item.content,
         });
+        setSkipSyncContent(`file://${path}`);
       } else {
-        // 文本：直接写入剪贴板
         await invoke("write_clipboard_text", { text: item.content });
+        setSkipSyncContent(item.content);
       }
       setCopiedId(item.id);
       setTimeout(() => {
