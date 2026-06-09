@@ -1,6 +1,6 @@
-# ClipboardSync
+# 笺流
 
-跨平台剪贴板同步工具，支持 macOS、Linux 和 Windows。
+局域网剪贴板流转工具，支持 macOS、Linux 和 Windows。
 
 ## 功能特性
 

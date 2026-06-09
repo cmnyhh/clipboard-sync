@@ -1,6 +1,6 @@
 {
   "identifier": "default",
-  "description": "Default capabilities for ClipboardSync",
+  "description": "Default capabilities for 笺流",
   "windows": ["main", "floating"],
   "permissions": [
     "core:default",

@@ -1,7 +1,7 @@
 [package]
 name = "clipboard-sync"
 version = "0.2.0"
-description = "跨平台剪贴板同步工具"
+description = "笺流 - 局域网剪贴板流转工具"
 authors = ["Your Name"]
 license = "MIT"
 repository = ""

@@ -1,5 +1,5 @@
 {
-  "productName": "ClipboardSync",
+  "productName": "笺流",
   "version": "0.2.0",
   "identifier": "com.clipboard-sync.app",
   "build": {
@@ -13,7 +13,7 @@
       {
         "fullscreen": false,
         "resizable": false,
-        "title": "ClipboardSync",
+        "title": "笺递",
         "width": 960,
         "height": 680,
         "minWidth": 680,

@@ -236,7 +236,7 @@ export default function SettingsPanel() {
             style={{ borderTop: "0.5px solid rgba(0,0,0,0.04)" }}>
             <span className="text-[11px]" style={{ color: "#c7c7cc" }}>Made with</span>
             <FiHeart className="w-3 h-3" style={{ color: "#ff375f" }} />
-            <span className="text-[11px]" style={{ color: "#c7c7cc" }}>by ClipboardSync Team</span>
+            <span className="text-[11px]" style={{ color: "#c7c7cc" }}>by 笺流</span>
           </div>
         </div>
       </div>

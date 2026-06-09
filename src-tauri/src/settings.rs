@@ -46,7 +46,7 @@ impl Default for AppSettings {
 
 fn settings_path() -> PathBuf {
     let mut path = dirs::config_dir().unwrap_or_else(|| PathBuf::from("."));
-    path.push("clipboard-sync");
+    path.push("jianliu");
     fs::create_dir_all(&path).ok();
     path.push("settings.json");
     path

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { useAppStore } from "../store/appStore";
-import { FiWifi, FiMonitor, FiCopy, FiZap, FiLink } from "react-icons/fi";
+import { FiWifi, FiMonitor, FiCopy, FiZap, FiLink, FiSend } from "react-icons/fi";
 
 export default function Header() {
   const { isConnected, localIp, deviceName, setConnected } = useAppStore();
@@ -68,20 +68,20 @@ export default function Header() {
         <div className="flex items-center gap-3">
           <div className="relative flex items-center justify-center w-9 h-9 rounded-[11px]"
             style={{
-              background: "linear-gradient(135deg, rgba(0,122,255,0.1), rgba(88,86,214,0.08))",
-              border: "0.5px solid rgba(0,122,255,0.12)",
+              background: "linear-gradient(135deg, rgba(245,166,35,0.15), rgba(232,115,26,0.1))",
+              border: "0.5px solid rgba(245,166,35,0.2)",
               boxShadow: "inset 0 0.5px 0 rgba(255,255,255,0.5)",
             }}>
-            <FiCopy className="w-[18px] h-[18px]" style={{ color: "#007aff" }} />
+            <FiSend className="w-[18px] h-[18px]" style={{ color: "#F5A623" }} />
             <div className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full border-[1.5px] border-white/80 animate-pulse-slow"
               style={{ background: "#30d158", boxShadow: "0 0 5px rgba(48,209,88,0.5)" }} />
           </div>
           <div>
-            <h1 className="text-[14px] font-bold tracking-tight leading-tight" style={{ color: "#1d1d1f" }}>
-              Clipboard<span style={{ color: "#007aff" }}>Sync</span>
+            <h1 className="text-[15px] font-bold tracking-tight leading-tight" style={{ color: "#1d1d1f" }}>
+              笺<span style={{ color: "#F5A623" }}>流</span>
             </h1>
             <p className="text-[9px] font-medium tracking-wide" style={{ color: "#8e8e93" }}>
-              跨平台剪贴板同步
+              局域网剪贴板流转
             </p>
           </div>
         </div>

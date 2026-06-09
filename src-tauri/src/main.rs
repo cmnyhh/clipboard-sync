@@ -241,11 +241,11 @@ async fn save_and_copy_file(
         .decode(raw)
         .map_err(|e| format!("解码失败: {}", e))?;
 
-    // 保存到 ~/ClipboardSync/ 目录
+    // 保存到 ~/笺流/ 目录
     let save_dir = dirs::download_dir()
         .or_else(|| dirs::home_dir())
         .unwrap_or_else(|| std::path::PathBuf::from("."))
-        .join("ClipboardSync");
+        .join("笺流");
 
     fs::create_dir_all(&save_dir).map_err(|e| format!("创建目录失败: {}", e))?;
 
