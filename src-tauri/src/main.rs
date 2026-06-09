@@ -267,18 +267,23 @@ fn create_floating_window(app: &tauri::AppHandle) -> Result<(), String> {
     use tauri::WebviewUrl;
     use tauri::WebviewWindowBuilder;
 
-    let window = WebviewWindowBuilder::new(app, "floating", WebviewUrl::App("/floating".into()))
+    let mut builder = WebviewWindowBuilder::new(app, "floating", WebviewUrl::App("/floating".into()))
         .title("")
         .inner_size(s.floating_width.max(320.0), s.floating_height.max(380.0))
         .always_on_top(true)
         .decorations(false)
         .resizable(false)
         .skip_taskbar(true)
-        .transparent(true)
         .shadow(true)
-        .position(s.floating_x.max(0.0), s.floating_y.max(0.0))
-        .build()
-        .map_err(|e| e.to_string())?;
+        .position(s.floating_x.max(0.0), s.floating_y.max(0.0));
+
+    // transparent() 在 macOS 上不可用，仅在支持的平台调用
+    #[cfg(not(target_os = "macos"))]
+    {
+        builder = builder.transparent(true);
+    }
+
+    let window = builder.build().map_err(|e| e.to_string())?;
 
     let app_handle = app.clone();
     let _ = window.on_window_event(move |event| {
