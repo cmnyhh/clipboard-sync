@@ -71,7 +71,7 @@ mod linux {
 
         if status.success() {
             // 同时写入 text/uri-list（Dolphin 等识别）
-            let mut child2 = Command::new("xclip")
+            let child2 = Command::new("xclip")
                 .args(["-selection", "clipboard", "-t", "text/uri-list"])
                 .stdin(std::process::Stdio::piped())
                 .stdout(std::process::Stdio::null())

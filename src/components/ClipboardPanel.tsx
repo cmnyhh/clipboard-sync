@@ -29,6 +29,8 @@ export default function ClipboardPanel() {
     setNetworkContent,
     skipSyncContent,
     setSkipSyncContent,
+    skipNextPoll,
+    setSkipNextPoll,
   } = useAppStore();
 
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -41,6 +43,11 @@ export default function ClipboardPanel() {
     let lastContent = "";
 
     const checkClipboard = async () => {
+      // 如果标记了跳过本轮轮询
+      if (useAppStore.getState().skipNextPoll) {
+        useAppStore.getState().setSkipNextPoll(false);
+        return;
+      }
       try {
         const content = await invoke<{
           type: string;
@@ -115,6 +122,8 @@ export default function ClipboardPanel() {
         fileSize?: number;
       } | null>("pick_file");
       if (file) {
+        // 跳过下一次轮询（文件对话框可能写入剪贴板）
+        setSkipNextPoll(true);
         await invoke("sync_clipboard", { data: file });
         addClipboardItem({
           id: Date.now().toString(),

@@ -59,6 +59,9 @@ interface AppState {
   // 标记程序写入的内容（不触发同步）
   skipSyncContent: string | null;
   setSkipSyncContent: (content: string | null) => void;
+  // 跳过下一次剪贴板轮询
+  skipNextPoll: boolean;
+  setSkipNextPoll: (skip: boolean) => void;
 
   // Actions
   setConnected: (connected: boolean) => void;
@@ -110,6 +113,8 @@ export const useAppStore = create<AppState>((set) => ({
   setNetworkContent: (content) => set({ networkContent: content }),
   skipSyncContent: null,
   setSkipSyncContent: (content) => set({ skipSyncContent: content }),
+  skipNextPoll: false,
+  setSkipNextPoll: (skip) => set({ skipNextPoll: skip }),
 
   setConnected: (connected) => set({ isConnected: connected }),
   setServerAddress: (address) => set({ serverAddress: address }),
