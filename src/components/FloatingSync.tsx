@@ -19,7 +19,7 @@ dayjs.extend(relativeTime);
 dayjs.locale("zh-cn");
 
 export default function FloatingSync() {
-  const { pendingSyncItems, removePendingSyncItem, clearPendingSyncItems, addPendingSyncItem } =
+  const { pendingSyncItems, removePendingSyncItem, clearPendingSyncItems, addPendingSyncItem, networkContent, setNetworkContent } =
     useAppStore();
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
@@ -31,18 +31,20 @@ export default function FloatingSync() {
       data: { type: string; content: string; fileName?: string; fileSize?: number };
     }>("sync-received", (event) => {
       const { data, device_name } = event.payload;
-      if (data.type !== "text") {
-        addPendingSyncItem({
-          id: Date.now().toString() + Math.random().toString(36).slice(2, 6),
-          type: data.type as "text" | "image" | "file",
-          content: data.content,
-          fileName: data.fileName,
-          fileSize: data.fileSize,
-          timestamp: Date.now(),
-          sourceDevice: device_name || "未知设备",
-          synced: true,
-        });
+      // 标记来自网络，防止循环
+      if (data.type === "text") {
+        setNetworkContent(data.content);
       }
+      addPendingSyncItem({
+        id: Date.now().toString() + Math.random().toString(36).slice(2, 6),
+        type: data.type as "text" | "image" | "file",
+        content: data.content,
+        fileName: data.fileName,
+        fileSize: data.fileSize,
+        timestamp: Date.now(),
+        sourceDevice: device_name || "未知设备",
+        synced: true,
+      });
     });
     return () => { unlisten.then((fn) => fn()); };
   }, []);
@@ -190,12 +192,24 @@ export default function FloatingSync() {
                     className="text-[11px] line-clamp-2 leading-relaxed"
                     style={{ color: "#3a3a3c" }}
                   >
-                    {item.content}
+                    {item.type === "file"
+                      ? (item.fileName || "未知文件")
+                      : item.type === "image"
+                      ? "图片"
+                      : item.content}
                   </p>
                   <div className="flex items-center gap-1.5 mt-1">
                     <span className="text-[8px]" style={{ color: "#8e8e93" }}>
                       {item.sourceDevice}
                     </span>
+                    {item.fileSize ? (
+                      <>
+                        <span style={{ color: "#d1d1d6" }}>·</span>
+                        <span className="text-[8px]" style={{ color: "#8e8e93" }}>
+                          {(item.fileSize / 1024).toFixed(1)} KB
+                        </span>
+                      </>
+                    ) : null}
                     <span style={{ color: "#d1d1d6" }}>·</span>
                     <span
                       className="text-[9px] flex items-center gap-0.5"

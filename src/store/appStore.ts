@@ -53,6 +53,10 @@ interface AppState {
   // 待接收队列（来自其他设备的同步内容）
   pendingSyncItems: ClipboardItem[];
 
+  // 防止同步循环：标记来自网络的内容
+  networkContent: string | null;
+  setNetworkContent: (content: string | null) => void;
+
   // Actions
   setConnected: (connected: boolean) => void;
   setServerAddress: (address: string) => void;
@@ -98,6 +102,9 @@ export const useAppStore = create<AppState>((set) => ({
   floatingHeight: 420,
 
   pendingSyncItems: [],
+
+  networkContent: null,
+  setNetworkContent: (content) => set({ networkContent: content }),
 
   setConnected: (connected) => set({ isConnected: connected }),
   setServerAddress: (address) => set({ serverAddress: address }),

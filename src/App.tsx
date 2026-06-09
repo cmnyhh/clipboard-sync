@@ -12,7 +12,7 @@ function App() {
   const [activeTab, setActiveTab] = useState<"clipboard" | "settings">(
     "clipboard"
   );
-  const { setLocalIp, setDeviceName, loadSettings, addPendingSyncItem, addClipboardItem } = useAppStore();
+  const { setLocalIp, setDeviceName, loadSettings, addPendingSyncItem, addClipboardItem, setNetworkContent } = useAppStore();
 
   // 检测当前路径：/floating 走悬浮窗，否则走主窗口
   const isFloating = window.location.pathname === "/floating";
@@ -49,12 +49,13 @@ function App() {
         synced: true,
       };
 
-      // 文本自动加入历史，图片和文件加入待接收队列
+      // 标记来自网络，防止剪贴板轮询再次同步（防循环）
       if (data.type === "text") {
-        addClipboardItem(item);
-      } else {
-        addPendingSyncItem(item);
+        setNetworkContent(data.content);
       }
+
+      // 所有类型都加入待接收队列（悬浮窗可见）
+      addPendingSyncItem(item);
     });
 
     return () => {

@@ -25,6 +25,8 @@ export default function ClipboardPanel() {
     pendingSyncItems,
     removePendingSyncItem,
     clearPendingSyncItems,
+    networkContent,
+    setNetworkContent,
   } = useAppStore();
 
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -47,6 +49,12 @@ export default function ClipboardPanel() {
 
         if (content && content.content !== lastContent) {
           lastContent = content.content;
+
+          // 如果内容来自网络（防循环），跳过同步
+          if (networkContent && content.content === networkContent) {
+            setNetworkContent(null);
+            return;
+          }
 
           // 防抖：清除上一个定时器，重新计时
           if (debounceTimer) clearTimeout(debounceTimer);
