@@ -69,6 +69,10 @@ export default function ClipboardPanel() {
             setSkipSyncContent(null);
             return;
           }
+          // 跳过文件URI（file://开头的不同步）
+          if (content.content.startsWith("file://")) {
+            return;
+          }
 
           // 防抖：清除上一个定时器，重新计时
           if (debounceTimer) clearTimeout(debounceTimer);
