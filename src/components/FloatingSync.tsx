@@ -75,13 +75,22 @@ export default function FloatingSync() {
     }
   };
 
-  const handleCopy = async (content: string, id: string) => {
+  const handleCopy = async (item: typeof pendingSyncItems[0]) => {
     try {
-      await invoke("write_clipboard_text", { text: content });
-      setCopiedId(id);
+      if (item.type === "file" || item.type === "image") {
+        // 文件/图片：保存到本地 + 写入文件引用剪贴板
+        await invoke("save_and_copy_file", {
+          fileName: item.fileName || (item.type === "image" ? "image.png" : "file"),
+          base64Content: item.content,
+        });
+      } else {
+        // 文本：直接写入剪贴板
+        await invoke("write_clipboard_text", { text: item.content });
+      }
+      setCopiedId(item.id);
       setTimeout(() => {
         setCopiedId(null);
-        removePendingSyncItem(id);
+        removePendingSyncItem(item.id);
       }, 800);
     } catch (err) {
       console.error("复制失败:", err);
@@ -225,7 +234,7 @@ export default function FloatingSync() {
 
                 {/* 复制按钮 */}
                 <button
-                  onClick={() => handleCopy(item.content, item.id)}
+                  onClick={() => handleCopy(item)}
                   className="flex-shrink-0 p-1.5 rounded-md transition-all duration-200"
                   style={{
                     background:
