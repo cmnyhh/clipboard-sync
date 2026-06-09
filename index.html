@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ClipboardSync</title>
+    <style>
+      body { margin: 0; background: transparent; }
+      .loader { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
+      .loader-dot { width: 8px; height: 8px; border-radius: 50%; background: #007aff; display: inline-block; margin: 0 4px; animation: bounce 1.4s infinite ease-in-out both; }
+      .loader-dot:nth-child(1) { animation-delay: -0.32s; }
+      .loader-dot:nth-child(2) { animation-delay: -0.16s; }
+      @keyframes bounce { 0%,80%,100% { transform: scale(0); } 40% { transform: scale(1); } }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <div class="loader">
+        <div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
